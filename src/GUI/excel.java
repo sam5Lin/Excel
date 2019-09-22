@@ -47,16 +47,11 @@ public class excel extends JFrame {
 		});
 	}
 
-	/*
-	 * ÁĞÃû¹Ì¶¨ABCD...
-	 * µÚÒ»ÁĞ¹Ì¶¨ÊÇ123456...
-	 * UI½çÃæ
-	 * ÅÅĞòÊ±×ó±ßµÄĞòºÅ²»·¢Éú±ä»¯
-	 */
+
 	public excel() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
-		setTitle("±í¸ñ");
+		setTitle("è¡¨æ ¼");
 		getContentPane().setLayout(new BorderLayout());
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(0, 0, 434, 261);
@@ -82,16 +77,16 @@ public class excel extends JFrame {
 		};
 		
 		table = new JTable(tableModel);
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);//ÆäËûËùÓĞÁĞ²»µ÷Õû£¨Ìí¼ÓºáÏò¹ö¶¯À¸µÄ¹Ø¼ü´úÂë£©
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);//è®¾ç½®æ¨ªå‘æ»šåŠ¨
 		DefaultTableCellRenderer r = new DefaultTableCellRenderer();   
 		r.setHorizontalAlignment(JLabel.CENTER);   
-		table.setDefaultRenderer(Object.class, r);//ÉèÖÃ¾ÓÖĞ
+		table.setDefaultRenderer(Object.class, r);//è®¾ç½®æ–‡æœ¬å±€ä¸­
 		table.setRowHeight(20);
 		for(int i = 0; i < colIndex; i++) {			
 			TableColumn tableColumn = table.getColumnModel().getColumn(i);
 			tableColumn.setMinWidth(50);
 		}
-		table.setRowSorter(new TableRowSorter<>(tableModel));  //ÅÅĞò¹¦ÄÜ
+		table.setRowSorter(new TableRowSorter<>(tableModel));  //è®¾ç½®æ’åº
 		scrollPane.setViewportView(table);
 		
 		table.addMouseListener(new MouseAdapter() {
@@ -108,10 +103,10 @@ public class excel extends JFrame {
 	}
 	
 	
-	//¶Áº¯Êı
+	//è¯»æ–‡ä»¶
 	public static void read(Vector<String> columnNames, Vector<Vector<String> > tableValues) throws IOException {
 
-		// ¶ÁÎÄ¼ş
+
 		String filePath = new File("").getAbsolutePath() + "/src/file/" + "data" + ".txt";
 		FileInputStream inputStream = new FileInputStream(filePath);            
 		InputStreamReader inputStreamReader = new InputStreamReader(inputStream);            
@@ -119,7 +114,7 @@ public class excel extends JFrame {
 		String lineString = ""; 
 		Vector<String> vec ;
 		/*
-		 * ³õÊ¼»¯ÁĞÃû
+		 * è®¾ç½®è¡Œå·
 		 */
 		columnNames.add("");
 		for(colIndex = 1;colIndex <= 1000;colIndex++) {
@@ -149,12 +144,12 @@ public class excel extends JFrame {
 	
 	
 	
-	//ĞèÒª¸üĞÂ
+	//å†™æ–‡ä»¶ éœ€è¦åŠ å¯†
 	public static void write(DefaultTableModel tableModel) throws IOException {
-		// Ğ´ÎÄ¼ş
+
 		String filePath2 = new File("").getAbsolutePath() + "/src/file/" + "data00" + ".txt";
 		File file = new File(filePath2);  
-		// ´æÔÚÔòÉ¾³ıÖØ½¨          
+		// å¦‚æœå·²ç»å­˜åœ¨
 		if(file.exists()){            
 		    file.delete();            
 		}            
@@ -163,7 +158,7 @@ public class excel extends JFrame {
 		FileOutputStream fileOutputStream = new FileOutputStream(filePath2);            
 		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);            
 		BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);            
-		// Ğ´Ò»ĞĞ
+
 		int col = tableModel.getColumnCount();
 		int row = tableModel.getRowCount();
 		Vector vec = tableModel.getDataVector();
@@ -179,7 +174,7 @@ public class excel extends JFrame {
 		String content = colNames;
 		bufferedWriter.write(content + "\n");
 		
-		bufferedWriter.close();// ±ØĞë¼ÓÈë£¬·ñÔò»º´æÇøÎ´ÂúÊ±²»Ğ´Èë£¬×îºó»áÓĞ²¿·ÖÄÚÈİÈ±Ê§
+		bufferedWriter.close();
 		fileOutputStream.close();
 	}
 	
@@ -187,35 +182,35 @@ public class excel extends JFrame {
 	
 	
 
-	//ÓÒ¼üµ¯³ö²Ëµ¥
+	//é¼ æ ‡å³é”®åŠ¨ä½œ
 	 private void mouseRightButtonClick(MouseEvent evt) {
-	        //ÅĞ¶ÏÊÇ·ñÎªÊó±êµÄBUTTON3°´Å¥£¬BUTTON3ÎªÊó±êÓÒ¼ü
+
 	        if (evt.getButton() == MouseEvent.BUTTON3) {
-	            //Í¨¹ıµã»÷Î»ÖÃÕÒµ½µã»÷Îª±í¸ñÖĞµÄĞĞ
+	            //è·å¾—é¼ æ ‡ä½ç½®
 	            int focusedRowIndex = table.rowAtPoint(evt.getPoint());
 	            int focusedColIndex = table.columnAtPoint(evt.getPoint());
 	            if (focusedRowIndex == -1 && focusedColIndex == -1) {
 	                return;
 	            }
-	            System.out.println("ÓÒ¼ü");
-	            //½«±í¸ñËùÑ¡ÏîÉèÎªµ±Ç°ÓÒ¼üµã»÷µÄĞĞ
+	            System.out.println("å³é”®");
+	            //è¡Œé€‰ä¸­ å¯ä»¥æŒ‡å®šç‚¹å‡»ç¬¬ä¸€åˆ—æ—¶é€‰å®šæ•´è¡Œ
 	            table.setRowSelectionInterval(focusedRowIndex, focusedRowIndex);
-	            //µ¯³ö²Ëµ¥
+	            //å¼¹å‡ºèœå•
 	            m_popupMenu.show(table, evt.getX(), evt.getY(), focusedRowIndex, focusedColIndex);
 	        }
 	 }
 	 
 	 
-	 //²åÈëÁĞ
+	 //å¢åŠ åˆ—
 	 private void addCol() {
-		 System.out.println("²åÈëÁĞ" + ColName.toColName(colIndex));
+		 System.out.println("åˆ—å·" + ColName.toColName(colIndex));
 		 tableModel.addColumn(ColName.toColName(colIndex++));
 		 System.out.println(colIndex);
 	 }
 	 
-	 //É¾³ıĞĞ
+	 //åˆ é™¤è¡Œ
 	 private void delRow(int row) {
-		 System.out.println("É¾³ıĞĞ:" + row);
+		 System.out.println("åˆ é™¤è¡Œ:" + row);
 		 
 	 }
 }

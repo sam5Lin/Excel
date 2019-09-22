@@ -4,7 +4,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
+
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -14,8 +14,8 @@ public class MyPopupMenu extends JPopupMenu {
 	private ArrayList<JMenuItem> menuItemList = new ArrayList<JMenuItem>();
 	
     {
-        menuItemList.add(new JMenuItem("  É¾³ýÐÐ  "));
-        menuItemList.add(new JMenuItem("  É¾³ýÁÐ  "));
+        menuItemList.add(new JMenuItem("  åˆ é™¤è¡Œ  "));
+        menuItemList.add(new JMenuItem("  åˆ é™¤åˆ—  "));
        
         menuItemList.forEach(m_popupMenu::add);
 	}
@@ -24,18 +24,18 @@ public class MyPopupMenu extends JPopupMenu {
 		
         menuItemList.get(0).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-            	System.out.println("ÐÐ:" + row);
-            	System.out.println("ÁÐ:" + col);
-                System.out.println("É¾³ýÐÐ");
+            	System.out.println("è¡Œ:" + row);
+            	System.out.println("åˆ—:" + col);
+                System.out.println("åˆ é™¤è¡Œ");
             }
         });
         
         
         menuItemList.get(1).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-            	System.out.println("ÐÐ:" + row);
-            	System.out.println("ÁÐ:" + col);
-                System.out.println("É¾³ýÁÐ");
+            	System.out.println("è¡Œ:" + row);
+            	System.out.println("åˆ—:" + col);
+                System.out.println("åˆ é™¤åˆ—");
             }
         });
         
