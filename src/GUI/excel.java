@@ -68,23 +68,6 @@ public class excel extends JFrame {
         final JToolBar toolBar = new JToolBar("工具栏");// 创建工具栏对象
         toolBar.setFloatable(false);// 设置为不允许拖动
 
-        final JButton newButton = new JButton("新建");// 创建按钮对象
-
-        newButton.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                JFileChooser jfc = new JFileChooser();// 文件选择器
-                jfc.setFileSelectionMode(0);// 设定只能选择到文件
-                int state = jfc.showOpenDialog(null);// 此句是打开文件选择器界面的触发语句
-                if (state == 1) {
-                    return;// 撤销则返回
-                } else {
-                    File f = jfc.getSelectedFile();// f为选择到的文件
-                    System.out.println(f.getAbsolutePath());
-                }
-            }
-        });// 添加动作事件监听器
-
         String path = new File("").getAbsolutePath() + "/src/image/" + "save" + ".png";
         ImageIcon icon = new ImageIcon(path);
         final JButton saveButton = new JButton(icon);
@@ -98,12 +81,12 @@ public class excel extends JFrame {
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     write();
+                    JOptionPane.showMessageDialog(getContentPane(), "保存成功", "Excel",JOptionPane.INFORMATION_MESSAGE);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
-        toolBar.add(newButton);// 添加到工具栏中
         toolBar.add(saveButton);
         toolBar.addSeparator();// 添加默认大小的分隔符
 
@@ -139,8 +122,13 @@ public class excel extends JFrame {
             @Override
             public void tableChanged(TableModelEvent e) {
                 int type = e.getType();// 获得事件的类型
-                int row = e.getFirstRow() + 1;// 获得触发此次事件的表格行索引
-                int column = e.getColumn() + 1;// 获得触发此次事件的表格列索引
+                int row = e.getFirstRow() ;// 获得触发此次事件的表格行索引
+                int column = e.getColumn() ;// 获得触发此次事件的表格列索引
+                for(int i = 1; i < column; i++){   //把该行中之前的null都设置为“”
+                    if(table.getValueAt(row, i) == null){
+                        table.setValueAt("",row,i);
+                    }
+                }
                 if (type == TableModelEvent.UPDATE) {
                     System.out.print("此次事件由 修改 行触发，");
                     System.out.println("此次修改的是第 " + row + " 行  " + column + "列");
@@ -156,7 +144,7 @@ public class excel extends JFrame {
     public void table(){
         table = new JTable(tableModel);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);//设置横向滚动
-
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         DefaultTableCellRenderer r = new DefaultTableCellRenderer();
         r.setHorizontalAlignment(JLabel.CENTER);
         table.setDefaultRenderer(Object.class, r);//设置文本居中
@@ -355,7 +343,6 @@ public class excel extends JFrame {
 		tableModel();
         table();
         header();
-
 	}
 
 	//数字去多余0
@@ -391,17 +378,11 @@ public class excel extends JFrame {
 		rowIndex = 1;
 		while ((lineString = bufferedReader.readLine()) != null) {   
 			vec = new Vector<String>();
-			String[] str = lineString.split(" ");
+			String[] str = lineString.split("!@!@!@");
 			vec.add(String.valueOf(rowIndex++));
 			for(String s : str) {
 				vec.add(s);
 			}
-			tableValues.add(vec);
-		}
-		
-		for(int i = 0 ;i < 50;i++) {
-			vec = new Vector<String>();
-			vec.add(String.valueOf(rowIndex++));
 			tableValues.add(vec);
 		}
 		         
@@ -439,22 +420,17 @@ public class excel extends JFrame {
 			for(int j = 1;j < col;j++){
 			    String str = (String)(table.getValueAt(i, j));
 			    if(str != null){
-                    rowStr.append(str + ' ');
+                    rowStr.append(str + "!@!@!@");
                 }
-
 
             }
             bufferedWriter.write(rowStr + "\n");
 		}
 
-		
 		bufferedWriter.close();
 		fileOutputStream.close();
 	}
-	
-	
-	
-	
+
 
 	//鼠标右键动作
 	 private void mouseRightButtonClick(MouseEvent evt) {
