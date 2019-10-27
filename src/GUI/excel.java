@@ -146,7 +146,6 @@ public class excel extends JFrame {
                     System.out.println("此次修改的是第 " + row + " 行  " + column + "列");
                     // 判断是否有修改行触发
                 }
-                }
             }
         });
 
@@ -249,6 +248,19 @@ public class excel extends JFrame {
                                     }
                                 }
                             }
+                            else if((data1 == null || data1.length() == 0) && (data2 != null && data2.length() != 0)){
+                                table.setValueAt(data2, i, column);
+                                table.setValueAt(data1, j, column);
+                                flag = true;
+                                for(int index = 1; index < colIndex ; index++){
+                                    if(index != column){
+                                        data1 = (String) table.getValueAt(i, index);
+                                        data2 = (String)table.getValueAt(j, index);
+                                        table.setValueAt(data2, i, index);
+                                        table.setValueAt(data1, j, index);
+                                    }
+                                }
+                            }
                         }
                         if(!flag) break;
                     }
@@ -312,6 +324,19 @@ public class excel extends JFrame {
                                                 table.setValueAt(data1, j, index);
                                             }
                                         }
+                                    }
+                                }
+                            }
+                            else if((data1 == null || data1.length() == 0) && (data2 != null && data2.length() != 0)){
+                                table.setValueAt(data2, i, column);
+                                table.setValueAt(data1, j, column);
+                                flag = true;
+                                for(int index = 1; index < colIndex ; index++){
+                                    if(index != column){
+                                        data1 = (String) table.getValueAt(i, index);
+                                        data2 = (String)table.getValueAt(j, index);
+                                        table.setValueAt(data2, i, index);
+                                        table.setValueAt(data1, j, index);
                                     }
                                 }
                             }
@@ -441,7 +466,8 @@ public class excel extends JFrame {
 	            if (focusedRowIndex == -1 && focusedColIndex == -1) {
 	                return;
 	            }
-	            System.out.println("右键");
+	            String str = (String)table.getValueAt(focusedRowIndex, focusedColIndex);
+                System.out.println(str);
 	            //行选中 可以指定点击第一列时选定整行
 	            table.setRowSelectionInterval(focusedRowIndex, focusedRowIndex);
 	            table.setColumnSelectionInterval(focusedColIndex, focusedColIndex);
