@@ -2,6 +2,10 @@ package GUI;
 
 import org.junit.Test;
 
+/*
+表格每一列的列名
+ */
+
 public class ColName {
 	public static String toColName(int index) {
 		

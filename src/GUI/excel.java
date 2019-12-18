@@ -1,10 +1,7 @@
 package GUI;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,26 +18,35 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
 
+
+
+/*
+EXCEL主程序
+ */
 public class excel extends JFrame {
 	
-	private JTable table;
-	private DefaultTableModel tableModel;
-	private static int colIndex;
-	private static int rowIndex;
-	private int[] updown;
-    private JScrollPane scrollPane;
-    private JTableHeader header;//表头
-    private Vector<String> columnNames;
-    private Vector<Vector<String> > tableValues;
+	private JTable table; //表格
+	private DefaultTableModel tableModel; //表格的Model
+	private static int colIndex; //列数
+	private static int rowIndex; //行数
+	private int[] updown;   //记录每一列的表头当前是降序还是升序
+    private JScrollPane scrollPane; //滚动栏
+    private JTableHeader header; //表头
+    private Vector<String> columnNames; //用Vector记录列名
+    private Vector<Vector<String> > tableValues; //记录表格每一项的值
+
+
 	/**
 	 * Launch the application.
 	 */
+
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					excel frame = new excel();
-					frame.setVisible(true);
+					frame.setVisible(true);   //设置可见
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -53,6 +59,12 @@ public class excel extends JFrame {
     排序时将中间的空格移到后面去
      */
 
+    /*
+    初始化表格
+        设置大小
+        设置滚动栏
+     */
+
     public void init(){
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 450, 300);
@@ -61,57 +73,64 @@ public class excel extends JFrame {
         scrollPane = new JScrollPane();
         scrollPane.setBounds(0, 0, 434, 261);
         getContentPane().add(scrollPane);
-
     }
 
+
+    /*
+    设置顶部的ToolBar，加一个保存按钮
+     */
     public void toolBar(){
         final JToolBar toolBar = new JToolBar("工具栏");// 创建工具栏对象
         toolBar.setFloatable(false);// 设置为不允许拖动
 
-        String path = new File("").getAbsolutePath() + "/src/image/" + "save" + ".png";
+        String path = new File("").getAbsolutePath() + "/src/image/" + "save" + ".png"; //获取图片路径
         ImageIcon icon = new ImageIcon(path);
+
         final JButton saveButton = new JButton(icon);
         saveButton.setBounds(0,0, 20, 20);
         Image temp = icon.getImage().getScaledInstance(saveButton.getWidth(), saveButton.getHeight(), icon.getImage().SCALE_DEFAULT);
         icon = new ImageIcon(temp);
+
         saveButton.setIcon(icon);
 
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    write();
+                    write();//写文件
                     JOptionPane.showMessageDialog(getContentPane(), "保存成功", "Excel",JOptionPane.INFORMATION_MESSAGE);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
+
+
         toolBar.add(saveButton);
         toolBar.addSeparator();// 添加默认大小的分隔符
 
-        getContentPane().add(toolBar, BorderLayout.NORTH);
+        getContentPane().add(toolBar, BorderLayout.NORTH); //将ToolBar加入面板
     }
 
     public void tableModel(){
-        columnNames = new Vector<String>(26);
-        tableValues = new Vector<Vector<String> >();
+        columnNames = new Vector<String>(26);  //列名
+        tableValues = new Vector<Vector<String> >();       //表格里每一项的值
 
         try {
-            read(columnNames, tableValues);
+            read(columnNames, tableValues);   //读取文件
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        updown = new int[colIndex];
+        updown = new int[colIndex];    //每一列表头下一次点击是升序还是降序
         for (int i = 0 ;i < colIndex;i++){
-            updown[i] = 0;
+            updown[i] = 0;   //0为升序 1为降序
         }
 
         tableModel = new DefaultTableModel(tableValues, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                if(column == 0) {
+                if(column == 0) {       //设置第一列不可修改
                     return false;
                 }
                 return true;
@@ -121,22 +140,15 @@ public class excel extends JFrame {
         tableModel.addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
-                int type = e.getType();// 获得事件的类型
                 int row = e.getFirstRow() ;// 获得触发此次事件的表格行索引
                 int column = e.getColumn() ;// 获得触发此次事件的表格列索引
-                for(int i = 1; i < column; i++){   //把该行中之前的null都设置为“”
+                for(int i = 1; i < column; i++){      //把该行中之前的null都设置为“”，这个是关键点
                     if(table.getValueAt(row, i) == null){
                         table.setValueAt("",row,i);
                     }
                 }
-                if (type == TableModelEvent.UPDATE) {
-                    System.out.print("此次事件由 修改 行触发，");
-                    System.out.println("此次修改的是第 " + row + " 行  " + column + "列");
-                    // 判断是否有修改行触发
-                }
             }
         });
-
 
 
     }
@@ -144,17 +156,19 @@ public class excel extends JFrame {
     public void table(){
         table = new JTable(tableModel);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);//设置横向滚动
-        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);  //设置表格某项失去聚焦之后保留已输入的值
+
         DefaultTableCellRenderer r = new DefaultTableCellRenderer();
         r.setHorizontalAlignment(JLabel.CENTER);
-        table.setDefaultRenderer(Object.class, r);//设置文本居中
-        table.setRowHeight(20);
+        table.setDefaultRenderer(Object.class, r); //设置文本居中
+
+        table.setRowHeight(20); //设置每一行高度
         for(int i = 0; i < colIndex; i++) {
             TableColumn tableColumn = table.getColumnModel().getColumn(i);
-            tableColumn.setMinWidth(50);
+            tableColumn.setMinWidth(50); //设置每一列最小宽度
         }
 
-        table.addMouseListener(new MouseAdapter() {
+        table.addMouseListener(new MouseAdapter() {     //添加鼠标右键行为
             public void mouseClicked(MouseEvent evt) {
                 mouseRightButtonClick(evt);
             }
