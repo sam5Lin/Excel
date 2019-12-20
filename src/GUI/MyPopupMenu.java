@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 
+
+/*
+自定义一个弹出菜单
+ */
 public class MyPopupMenu extends JPopupMenu {
 	private JPopupMenu m_popupMenu = new JPopupMenu();
 	private ArrayList<JMenuItem> menuItemList = new ArrayList<JMenuItem>();
@@ -24,6 +28,10 @@ public class MyPopupMenu extends JPopupMenu {
 
 	public void show(Component invoker, int x, int y, int row, int col,int rowIndex, int colIndex) {
 
+
+        /*
+        监听删除行的动作
+         */
         menuItemList.get(0).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
 
@@ -35,7 +43,6 @@ public class MyPopupMenu extends JPopupMenu {
                 for(int i = row ; i < rowIndex - 2; i++){
                     for(int j = 1; j < colIndex ; j++){
                         String data = (String) table.getValueAt(i + 1, j);
-
                         table.setValueAt(data, i ,j);
                     }
                 }
@@ -48,7 +55,9 @@ public class MyPopupMenu extends JPopupMenu {
         });
 
         
-        
+        /*
+        监听删除列的动作
+         */
         menuItemList.get(1).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
             	System.out.println("行:" + row);

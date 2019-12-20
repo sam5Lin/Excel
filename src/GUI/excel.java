@@ -64,7 +64,6 @@ public class excel extends JFrame {
         设置大小
         设置滚动栏
      */
-
     public void init(){
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 450, 300);
@@ -112,6 +111,9 @@ public class excel extends JFrame {
         getContentPane().add(toolBar, BorderLayout.NORTH); //将ToolBar加入面板
     }
 
+    /*
+    设置第一列不可以修改，一直显示行号
+     */
     public void tableModel(){
         columnNames = new Vector<String>(26);  //列名
         tableValues = new Vector<Vector<String> >();       //表格里每一项的值
@@ -142,7 +144,7 @@ public class excel extends JFrame {
             public void tableChanged(TableModelEvent e) {
                 int row = e.getFirstRow() ;// 获得触发此次事件的表格行索引
                 int column = e.getColumn() ;// 获得触发此次事件的表格列索引
-                for(int i = 1; i < column; i++){      //把该行中之前的null都设置为“”，这个是关键点
+                for(int i = 1; i < column; i++){      //把该行中之前的null都设置为“”，这个是关键点，这样写文件就方便了
                     if(table.getValueAt(row, i) == null){
                         table.setValueAt("",row,i);
                     }
@@ -168,15 +170,25 @@ public class excel extends JFrame {
             tableColumn.setMinWidth(50); //设置每一列最小宽度
         }
 
-        table.addMouseListener(new MouseAdapter() {     //添加鼠标右键行为
+        table.addMouseListener(new MouseAdapter() {     //监听鼠标右键
             public void mouseClicked(MouseEvent evt) {
-                mouseRightButtonClick(evt);
+                mouseRightButtonClick(evt);  //弹出菜单栏
             }
         });
 
-        scrollPane.setViewportView(table);
+        scrollPane.setViewportView(table);    //设置可滑动
     }
 
+
+
+    /*
+    点击表头可以进行升序或者降序
+    设置排序函数，忽略第一行，忽略第一列，
+    并且对当列进行排序，其他列跟着换行，
+    列排序的准则是基于数字和字符串
+    数字 < 字符串
+    ACSII 大写 < 小写
+     */
     public void header(){
         header = table.getTableHeader();
         //表头增加监听  
@@ -186,9 +198,7 @@ public class excel extends JFrame {
                 System.out.println("点击");
                 int column = header.columnAtPoint(e.getPoint());
                 System.out.println(column); //获取列数
-				/*
-				设置排序函数，忽略第一行，忽略第一列，并且对当列进行排序，其他列跟着换行，列排序的准则是基于数字和字符串
-				 */
+
 
                 if(updown[column] == 0){
                     updown[column] = 1;
@@ -250,7 +260,7 @@ public class excel extends JFrame {
                                     }
                                 }
                             }
-                            else if((data1 == null || data1.length() == 0) && (data2 != null && data2.length() != 0)){
+                            else if((data1 == null || data1.length() == 0) && (data2 != null && data2.length() != 0)){   //空格无论是降序还是升序都是最后面
                                 table.setValueAt(data2, i, column);
                                 table.setValueAt(data1, j, column);
                                 flag = true;
@@ -264,7 +274,7 @@ public class excel extends JFrame {
                                 }
                             }
                         }
-                        if(!flag) break;
+                        if(!flag) break;   //如果当前已经是正确的顺序，直接跳出循环
                     }
                 }
                 else {
@@ -329,7 +339,7 @@ public class excel extends JFrame {
                                     }
                                 }
                             }
-                            else if((data1 == null || data1.length() == 0) && (data2 != null && data2.length() != 0)){
+                            else if((data1 == null || data1.length() == 0) && (data2 != null && data2.length() != 0)){  //空格排在最后面
                                 table.setValueAt(data2, i, column);
                                 table.setValueAt(data1, j, column);
                                 flag = true;
@@ -343,7 +353,7 @@ public class excel extends JFrame {
                                 }
                             }
                         }
-                        if(!flag) break;
+                        if(!flag) break; //如果当前已经是正确的顺序，直接跳出循环
                     }
                 }
 
@@ -351,6 +361,10 @@ public class excel extends JFrame {
         });
     }
 
+
+    /*
+    初始化Excel
+     */
 	public excel() {
 		init();
 		toolBar();
@@ -382,13 +396,19 @@ public class excel extends JFrame {
 		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);            
 		String lineString = ""; 
 		Vector<String> vec ;
+
 		/*
-		 * 设置行号
+		 * 设置列名
+		 * A - Z - AA 一直往下排列
 		 */
 		columnNames.add("");
 		for(colIndex = 1;colIndex <= 100;colIndex++) {
 			columnNames.add(ColName.toColName(colIndex));
 		}
+
+		/*
+		读文件，写入二维Vector中
+		 */
 		rowIndex = 1;
 		while ((lineString = bufferedReader.readLine()) != null) {   
 			vec = new Vector<String>();
@@ -406,11 +426,11 @@ public class excel extends JFrame {
 	}
 	
 
-	/*
-	读写注意出现空格，以及某行的前几列没有字符串
-	 */
+
 	
-	//写文件 需要加密
+	/*
+	写文件   可以考虑每一行都要写吗？
+	 */
 	public  void write() throws IOException {
 		String filePath2 = new File("").getAbsolutePath() + "/src/file/" + "data" + ".txt";
 		File file = new File(filePath2);  
@@ -458,9 +478,11 @@ public class excel extends JFrame {
 	            }
 	            String str = (String)table.getValueAt(focusedRowIndex, focusedColIndex);
                 System.out.println(str);
+
 	            //行选中 可以指定点击第一列时选定整行
 	            table.setRowSelectionInterval(focusedRowIndex, focusedRowIndex);
 	            table.setColumnSelectionInterval(focusedColIndex, focusedColIndex);
+
 	            //弹出菜单
                 if(focusedColIndex != 0){
 				    new MyPopupMenu().show(table, evt.getX(), evt.getY(), focusedRowIndex, focusedColIndex, rowIndex, colIndex);
